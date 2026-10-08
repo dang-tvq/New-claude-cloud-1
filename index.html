@@ -206,6 +206,27 @@ details.voc[open] summary::before{transform:rotate(45deg)}
 .band td.n{font-variant-numeric:tabular-nums;font-weight:700;white-space:nowrap}
 .band p{margin:0}
 @media (max-width:560px){.angle{margin-left:14px;margin-right:14px}.sn{display:none}}
+
+/* reviewed topics */
+:root{--ok:#1B7A43;--ok-soft:#DFF3E7}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ok:#5BC98C;--ok-soft:#1C3A2B}}
+:root[data-theme="dark"]{--ok:#5BC98C;--ok-soft:#1C3A2B}
+.prog{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.prog b{color:var(--ok);font-variant-numeric:tabular-nums}
+.prog-bar{flex:1 1 160px;height:6px;border-radius:999px;background:var(--line);overflow:hidden}
+.prog-bar i{display:block;height:100%;width:0;background:var(--ok);transition:width .25s}
+.done-btn{margin-left:auto;display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:999px;padding:4px 12px 4px 7px;font-size:12.5px;font-weight:600;white-space:nowrap}
+.done-btn::before{content:"";flex:none;width:15px;height:15px;box-sizing:border-box;border:1.5px solid currentColor;border-radius:50%}
+.done-btn:hover{color:var(--ink)}
+.done-btn[aria-pressed="true"]{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
+.done-btn[aria-pressed="true"]::before{content:"✓";border:0;background:var(--ok);color:var(--surface);display:grid;place-items:center;font-size:10px;font-weight:800}
+.tfoot{padding:12px 20px;border-top:1px solid var(--line-soft);display:flex}
+.topic.done{box-shadow:inset 3px 0 0 var(--ok)}
+.toc a .ck,.covers a .ck{display:none;font-style:normal;font-weight:700;color:var(--ok)}
+.toc a.done .ck,.covers a.done .ck{display:inline}
+.toc a.done:not(.on){color:var(--faint)}
+.covers a .ck{margin-left:auto}
+@media (max-width:560px){.tfoot{padding-left:14px;padding-right:14px}}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
 </style>
 
@@ -237,8 +258,9 @@ details.voc[open] summary::before{transform:rotate(45deg)}
     <section class="intro">
       <h1 id="partTitle">Part 1 · 33 chủ đề, 142 câu</h1>
       <p id="partLede"></p>
+      <div class="prog"><span id="progTxt"></span><div class="prog-bar" aria-hidden="true"><i id="progBar"></i></div></div>
       <div class="tips">
-        <b>Cách dùng:</b> bấm vào cụm được highlight để xem nghĩa tiếng Việt. Cuối mỗi chủ đề có bảng tổng hợp từ vựng. Bấm vào các nút màu phía trên để bật hoặc tắt từng loại highlight.
+        <b>Cách dùng:</b> bấm vào cụm được highlight để xem nghĩa tiếng Việt. Cuối mỗi chủ đề có bảng tổng hợp từ vựng. Bấm vào các nút màu phía trên để bật hoặc tắt từng loại highlight. Ôn xong đề nào thì bấm <b>Đánh dấu đã ôn</b> ở đầu hoặc cuối đề đó. Tiến độ được lưu trên trình duyệt này.
         <ul>
           <li>Học cụm từ, đừng học thuộc cả bài. Giám khảo nhận ra câu trả lời học thuộc rất nhanh.</li>
           <li>Các câu chuyện dựa trên bối cảnh của bạn (UA ở studio game, Marketing NEU, dự định học thạc sĩ ở Anh). Chi tiết nào không đúng với bạn thì sửa lại thành chuyện thật.</li>
@@ -286,15 +308,16 @@ function vocab(texts){
 }
 function secs(n){ return Math.round(n/2.3); }
 function fmtTime(s){ if(s<60) return "khoảng "+s+" giây"; var m=Math.floor(s/60), r=Math.round((s%60)/10)*10; return "khoảng "+m+" phút"+(r?" "+r+" giây":""); }
+var DBTN='<button type="button" class="done-btn" aria-pressed="false">Đánh dấu đã ôn</button>', DFOOT='<div class="tfoot">'+DBTN+'</div>';
 
 function buildP1(){
   return DATA.p1.map(function(t,ti){
     var id="p1-"+(ti+1);
-    var h='<section class="topic" id="'+id+'" data-name="'+esc(t.name.toLowerCase())+'"><div class="thead"><span class="tnum">Topic '+(ti+1)+'</span><h2>'+esc(t.name)+'</h2><span class="tmeta">'+t.qs.length+' câu</span></div>';
+    var h='<section class="topic" id="'+id+'" data-name="'+esc(t.name.toLowerCase())+'"><div class="thead"><span class="tnum">Topic '+(ti+1)+'</span><h2>'+esc(t.name)+'</h2><span class="tmeta">'+t.qs.length+' câu</span>'+DBTN+'</div>';
     t.qs.forEach(function(q,qi){ var w=words(q.a);
       h+='<div class="qa" data-s="'+esc((q.q+" "+plain(q.a)).toLowerCase())+'"><p class="q"><span class="n">'+(qi+1)+'.</span><span>'+esc(q.q)+'</span></p><div class="a">'+rich(q.a)+'</div><p class="meta">'+w+' từ · '+fmtTime(secs(w))+'</p></div>';
     });
-    return h+vocab(t.qs.map(function(q){return q.a;}))+'</section>';
+    return h+vocab(t.qs.map(function(q){return q.a;}))+DFOOT+'</section>';
   }).join("");
 }
 var SMAP={}; DATA.stories.forEach(function(st){ SMAP[st.k]=st; });
@@ -308,7 +331,7 @@ function storiesHTML(){
     var nums=Object.keys(st.map).map(Number).sort(function(a,b){return a-b;});
     h+='<details class="story" id="story-'+st.k+'"><summary><span class="sl s'+st.k+'">'+st.k+'</span><span class="st"><b>'+esc(st.name)+'</b><span>'+esc(st.who)+'</span></span><span class="sn">'+nums.length+' đề</span></summary><div class="sbody">'+
       '<div><h3>Chi tiết cố định cần nhớ</h3><ul class="facts">'+st.facts.map(function(f){return '<li>'+esc(f)+'</li>';}).join("")+'</ul></div>'+
-      '<div><h3>Dùng cho '+nums.length+' đề</h3><ul class="covers">'+nums.map(function(n){ return '<li><a href="#p23-'+n+'"><span>#'+n+'</span><span>'+esc(DATA.p23[n-1].name)+' <em>· '+esc(st.map[String(n)])+'</em></span></a></li>'; }).join("")+'</ul></div></div></details>';
+      '<div><h3>Dùng cho '+nums.length+' đề</h3><ul class="covers">'+nums.map(function(n){ return '<li><a href="#p23-'+n+'"><span>#'+n+'</span><span>'+esc(DATA.p23[n-1].name)+' <em>· '+esc(st.map[String(n)])+'</em></span><i class="ck" aria-hidden="true">✓</i></a></li>'; }).join("")+'</ul></div></div></details>';
   });
   return h+'</section>';
 }
@@ -321,7 +344,7 @@ function buildP23(){
   return storiesHTML()+orderList().map(function(ti){ var t=DATA.p23[ti];
     var id="p23-"+(ti+1), w=words(t.p2);
     var cues=t.cues.map(function(c){ return '<li'+(/^And explain/i.test(c)?' class="ex"':'')+'>'+esc(c)+'</li>'; }).join("");
-    var h='<section class="topic" id="'+id+'" data-name="'+esc(t.name.toLowerCase())+'"><div class="thead"><span class="tnum">Topic '+(ti+1)+'</span><h2>'+esc(t.name)+'</h2><span class="tmeta">1 cue card · '+t.qs.length+' câu Part 3</span></div>';
+    var h='<section class="topic" id="'+id+'" data-name="'+esc(t.name.toLowerCase())+'"><div class="thead"><span class="tnum">Topic '+(ti+1)+'</span><h2>'+esc(t.name)+'</h2><span class="tmeta">1 cue card · '+t.qs.length+' câu Part 3</span>'+DBTN+'</div>';
     h+='<p class="angle"><a class="tag-s s'+t.story+'" href="#story-'+t.story+'" data-story="'+t.story+'"><i>'+t.story+'</i>'+esc(SMAP[t.story].name)+'</a> <b>'+esc(angleOf(ti+1))+'</b></p>';
     h+='<div class="cue"><b>'+esc(t.name)+'</b><span class="say">You should say:</span><ul>'+cues+'</ul></div>';
     h+='<div class="sub">Part 2 · Bài nói mẫu</div><div class="p2 qa" data-s="'+esc((t.name+" "+t.cues.join(" ")+" "+plain(t.p2)).toLowerCase())+'"><div class="a">'+rich(t.p2)+'</div><p class="meta">'+w+' từ · '+fmtTime(secs(w))+'</p></div>';
@@ -329,7 +352,7 @@ function buildP23(){
     t.qs.forEach(function(q,qi){ var w2=words(q.a);
       h+='<div class="qa" data-s="'+esc((q.q+" "+plain(q.a)).toLowerCase())+'"><p class="q"><span class="n">'+(qi+1)+'.</span><span>'+esc(q.q)+'</span></p><div class="a">'+rich(q.a)+'</div><p class="meta">'+w2+' từ · '+fmtTime(secs(w2))+'</p></div>';
     });
-    return h+vocab([t.p2].concat(t.qs.map(function(q){return q.a;})))+'</section>';
+    return h+vocab([t.p2].concat(t.qs.map(function(q){return q.a;})))+DFOOT+'</section>';
   }).join("");
 }
 
@@ -352,10 +375,10 @@ function render(p){
   document.getElementById("partLede").textContent = LEDE[p];
   document.getElementById("tocTitle").textContent = p==="p1" ? "Part 1 · Chủ đề" : "Part 2 & 3 · Đề";
   var ord = p==="p23" ? orderList() : arr.map(function(_,i){return i;});
-  tocEl.innerHTML = ord.map(function(i){ var t=arr[i]; return '<li><a href="#'+p+'-'+(i+1)+'" data-id="'+p+'-'+(i+1)+'"><span>'+(i+1)+'</span>'+esc(t.name)+(t.story?'<span class="sb tag-s s'+t.story+'">'+t.story+'</span>':'')+'</a></li>'; }).join("");
+  tocEl.innerHTML = ord.map(function(i){ var t=arr[i]; return '<li><a href="#'+p+'-'+(i+1)+'" data-id="'+p+'-'+(i+1)+'"><span>'+(i+1)+'</span>'+esc(t.name)+'<i class="ck" aria-hidden="true">✓</i>'+(t.story?'<span class="sb tag-s s'+t.story+'">'+t.story+'</span>':'')+'</a></li>'; }).join("");
   jumpEl.innerHTML = '<option value="">Đi tới chủ đề…</option>'+arr.map(function(t,i){ return '<option value="'+p+'-'+(i+1)+'">'+(i+1)+'. '+esc(t.name)+'</option>'; }).join("");
   store("part",p);
-  applySearch(); observe();
+  paintDone(); applySearch(); observe();
 }
 document.querySelectorAll(".tabs button").forEach(function(b){ b.addEventListener("click",function(){ if(b.dataset.part!==part){ render(b.dataset.part); window.scrollTo(0,0);} }); });
 jumpEl.addEventListener("change",function(){ var el=document.getElementById(this.value); if(el) el.scrollIntoView({behavior:"smooth"}); this.value=""; });
@@ -387,6 +410,33 @@ document.querySelectorAll(".chip").forEach(function(c){
   c.addEventListener("click",function(){ var on=c.getAttribute("aria-pressed")==="true"; c.setAttribute("aria-pressed",on?"false":"true"); document.body.classList.toggle("off-"+k,on); store("off-"+k,on?"1":"0"); hidePop(); });
 });
 
+/* reviewed topics: keyed by part + topic name, so adding or reordering topics keeps the marks */
+var UNIT={p1:"chủ đề",p23:"đề"};
+function readDone(){ try{ var v=JSON.parse(load("done")); return v&&typeof v==="object"?v:{}; }catch(e){ return {}; } }
+var DONE=readDone();
+var progTxt=document.getElementById("progTxt"), progBar=document.getElementById("progBar");
+function doneKey(id){ var p=id.split("-")[0]; return p+"|"+DATA[p][id.split("-")[1]-1].name; }
+function doneAt(id){ return DONE[doneKey(id)]; }
+function paintDone(){
+  listEl.querySelectorAll(".topic").forEach(function(sec){ var t=doneAt(sec.id), d=t&&new Date(t);
+    sec.classList.toggle("done",!!t);
+    sec.querySelectorAll(".done-btn").forEach(function(b){ b.setAttribute("aria-pressed",t?"true":"false"); b.textContent=t?"Đã ôn · "+d.getDate()+"/"+(d.getMonth()+1):"Đánh dấu đã ôn"; b.title=t?"Bấm để bỏ đánh dấu":""; });
+  });
+  tocEl.querySelectorAll("a").forEach(function(a){ a.classList.toggle("done",!!doneAt(a.dataset.id)); });
+  listEl.querySelectorAll(".covers a").forEach(function(a){ a.classList.toggle("done",!!doneAt(a.getAttribute("href").slice(1))); });
+  Array.prototype.forEach.call(jumpEl.options,function(o){ if(!o.value) return; var i=o.value.split("-")[1]; o.textContent=(doneAt(o.value)?"✓ ":"")+i+". "+DATA[part][i-1].name; });
+  var arr=DATA[part], n=arr.filter(function(_,i){ return doneAt(part+"-"+(i+1)); }).length;
+  progTxt.innerHTML="Đã ôn <b>"+n+"</b>/"+arr.length+" "+UNIT[part];
+  progBar.style.width=(100*n/arr.length)+"%";
+}
+function toggleDone(sec){
+  var k=doneKey(sec.id);
+  if(DONE[k]) delete DONE[k]; else DONE[k]=Date.now();
+  store("done",JSON.stringify(DONE)); paintDone();
+}
+// another open tab changed the marks: pick them up so this tab doesn't overwrite them
+window.addEventListener("storage",function(e){ if(!e.key||e.key==="ielts-sep26-done"){ DONE=readDone(); paintDone(); } });
+
 /* popover */
 var pop=document.getElementById("pop"), popFor=null;
 function showPop(m){
@@ -400,7 +450,8 @@ function showPop(m){
   pop.style.left=left+"px"; pop.style.top=top+"px";
 }
 function hidePop(){ pop.hidden=true; popFor=null; }
-listEl.addEventListener("click",function(e){ var ob=e.target.closest(".order button"); if(ob){ if(ob.dataset.o!==ORDER){ ORDER=ob.dataset.o; store("order",ORDER); HTML.p23=null; render("p23"); document.getElementById("stories").scrollIntoView(); } return; }
+listEl.addEventListener("click",function(e){ var db=e.target.closest(".done-btn"); if(db){ toggleDone(db.closest(".topic")); return; }
+  var ob=e.target.closest(".order button"); if(ob){ if(ob.dataset.o!==ORDER){ ORDER=ob.dataset.o; store("order",ORDER); HTML.p23=null; render("p23"); document.getElementById("stories").scrollIntoView(); } return; }
   var ts=e.target.closest("a.tag-s, .covers a"); if(ts){ var id=ts.getAttribute("href").slice(1); var el=document.getElementById(id); if(el){ e.preventDefault(); if(el.tagName==="DETAILS") el.open=true; el.scrollIntoView({behavior:"smooth"}); } return; }
   var m=e.target.closest("mark"); if(m){ e.stopPropagation(); if(popFor===m) hidePop(); else showPop(m);} });
 listEl.addEventListener("keydown",function(e){ var m=e.target.closest&&e.target.closest("mark"); if(m&&(e.key==="Enter"||e.key===" ")){ e.preventDefault(); showPop(m);} });
