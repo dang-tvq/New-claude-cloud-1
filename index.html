@@ -23,7 +23,7 @@
   --hv:#5A4A10; --hv-b:#E3B93A; --hc:#1C4632; --hc-b:#5BC98C; --hp:#223A6B; --hp-b:#7EA2F5; --hi:#5A2440; --hi-b:#EE86B5;
   --cue:#221F17; --cue-line:#4A4230; --shadow:0 8px 28px rgba(0,0,0,.5); color-scheme:dark;}
 *{box-sizing:border-box}
-html{scroll-padding-top:150px}
+html{scroll-padding-top:calc(var(--hh,114px) + 36px)}
 body{background:var(--bg);color:var(--ink);font-family:var(--ui);font-size:15px;line-height:1.55;margin:0}
 button,input,select{font:inherit;color:inherit}
 button{cursor:pointer}
@@ -56,7 +56,7 @@ button{cursor:pointer}
 
 /* layout */
 .wrap{max-width:1180px;margin:0 auto;padding-inline:16px;padding-block:20px 64px;display:grid;grid-template-columns:250px minmax(0,1fr);gap:32px}
-.toc{position:sticky;top:150px;align-self:start;max-height:calc(100vh - 170px);overflow:auto;padding-right:6px}
+.toc{position:sticky;top:calc(var(--hh,114px) + 36px);align-self:start;max-height:calc(100vh - var(--hh,114px) - 56px);overflow:auto;padding-right:6px}
 .toc h2{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 8px;font-weight:600}
 .toc ol{list-style:none;margin:0;padding:0;display:grid;gap:1px}
 .toc a{display:flex;gap:8px;text-decoration:none;color:var(--muted);font-size:13.5px;padding:5px 8px;border-radius:6px;line-height:1.35}
@@ -136,14 +136,13 @@ details.voc[open] summary::before{transform:rotate(45deg)}
   .wrap{grid-template-columns:minmax(0,1fr);gap:0}
   .toc{display:none}
   .jump{display:block;flex:1 1 200px;width:auto}
-  html{scroll-padding-top:190px}
 }
 @media (max-width:560px){
   .bar-in{padding:8px 12px;gap:8px}
   .brand{display:none}
   .search,.jump{flex:1 1 0;padding:7px 10px;font-size:13.5px}
   .chip .lg{display:none}
-  html{scroll-padding-top:160px}
+  html{scroll-padding-top:calc(var(--hh,139px) + 20px)}
   .tabs{width:100%}
   .tabs button{flex:1;padding:7px 8px;font-size:13.5px}
   .tabs button small{display:none}
@@ -211,9 +210,10 @@ details.voc[open] summary::before{transform:rotate(45deg)}
 :root{--ok:#1B7A43;--ok-soft:#DFF3E7}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--ok:#5BC98C;--ok-soft:#1C3A2B}}
 :root[data-theme="dark"]{--ok:#5BC98C;--ok-soft:#1C3A2B}
-.prog{display:flex;align-items:center;gap:12px;flex-wrap:wrap;font-size:14px;color:var(--muted)}
+.prog{display:flex;align-items:center;gap:10px;font-size:13px;line-height:1.3;color:var(--muted)}
+.prog span{white-space:nowrap}
 .prog b{color:var(--ok);font-variant-numeric:tabular-nums}
-.prog-bar{flex:1 1 160px;height:6px;border-radius:999px;background:var(--line);overflow:hidden}
+.prog-bar{flex:1 1 auto;max-width:420px;height:6px;border-radius:999px;background:var(--line);overflow:hidden}
 .prog-bar i{display:block;height:100%;width:0;background:var(--ok);transition:width .25s}
 .done-btn{margin-left:auto;display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:999px;padding:4px 12px 4px 7px;font-size:12.5px;font-weight:600;white-space:nowrap}
 .done-btn::before{content:"";flex:none;width:15px;height:15px;box-sizing:border-box;border:1.5px solid currentColor;border-radius:50%}
@@ -249,6 +249,7 @@ details.voc[open] summary::before{transform:rotate(45deg)}
         <button class="chip i" data-k="i" aria-pressed="true"><i></i>Idiom</button>
       </div>
     </div>
+    <div class="prog"><span id="progTxt"></span><div class="prog-bar" aria-hidden="true"><i id="progBar"></i></div></div>
   </div>
 </header>
 
@@ -258,7 +259,6 @@ details.voc[open] summary::before{transform:rotate(45deg)}
     <section class="intro">
       <h1 id="partTitle">Part 1 · 33 chủ đề, 142 câu</h1>
       <p id="partLede"></p>
-      <div class="prog"><span id="progTxt"></span><div class="prog-bar" aria-hidden="true"><i id="progBar"></i></div></div>
       <div class="tips">
         <b>Cách dùng:</b> bấm vào cụm được highlight để xem nghĩa tiếng Việt. Cuối mỗi chủ đề có bảng tổng hợp từ vựng. Bấm vào các nút màu phía trên để bật hoặc tắt từng loại highlight. Ôn xong đề nào thì bấm <b>Đánh dấu đã ôn</b> ở đầu hoặc cuối đề đó. Tiến độ được lưu trên trình duyệt này.
         <ul>
@@ -464,13 +464,19 @@ window.addEventListener("scroll",function(){ if(!pop.hidden && Math.abs(window.s
 var io;
 function observe(){
   if(io) io.disconnect(); if(!("IntersectionObserver" in window)) return;
-  io=new IntersectionObserver(function(ents){ ents.forEach(function(en){ if(en.isIntersecting){ tocEl.querySelectorAll("a").forEach(function(a){ a.classList.toggle("on",a.dataset.id===en.target.id); }); var on=tocEl.querySelector("a.on"); if(on&&on.scrollIntoViewIfNeeded) on.scrollIntoViewIfNeeded(false);} }); },{rootMargin:"-160px 0px -65% 0px"});
+  io=new IntersectionObserver(function(ents){ ents.forEach(function(en){ if(en.isIntersecting){ tocEl.querySelectorAll("a").forEach(function(a){ a.classList.toggle("on",a.dataset.id===en.target.id); }); var on=tocEl.querySelector("a.on"); if(on&&on.scrollIntoViewIfNeeded) on.scrollIntoViewIfNeeded(false);} }); },{rootMargin:"-"+(HH+46)+"px 0px -65% 0px"});
   listEl.querySelectorAll(".topic").forEach(function(s){ io.observe(s); });
 }
 document.getElementById("totop").addEventListener("click",function(){ window.scrollTo({top:0,behavior:"smooth"}); });
 
+/* the sticky header grows when its controls wrap; scroll offsets follow its real height */
+var barEl=document.querySelector(".bar"), HH=0;
+function syncHH(){ var h=barEl.offsetHeight; if(h===HH) return; HH=h; document.documentElement.style.setProperty("--hh",h+"px"); observe(); }
+
 var start=(location.hash||"").replace("#","");
 render(start.indexOf("p23")===0 ? "p23" : (start.indexOf("p1")===0 ? "p1" : (load("part")||"p1")));
+syncHH();
+if("ResizeObserver" in window) new ResizeObserver(syncHH).observe(barEl); else window.addEventListener("resize",syncHH);
 if(start){ var el=document.getElementById(start); if(el) setTimeout(function(){ el.scrollIntoView(); },50); }
 </script>
 
