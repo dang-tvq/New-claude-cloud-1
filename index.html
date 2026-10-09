@@ -23,15 +23,15 @@
   --hv:#5A4A10; --hv-b:#E3B93A; --hc:#1C4632; --hc-b:#5BC98C; --hp:#223A6B; --hp-b:#7EA2F5; --hi:#5A2440; --hi-b:#EE86B5;
   --cue:#221F17; --cue-line:#4A4230; --shadow:0 8px 28px rgba(0,0,0,.5); color-scheme:dark;}
 *{box-sizing:border-box}
-html{scroll-padding-top:calc(var(--hh,114px) + 36px)}
+html{scroll-padding-top:calc(var(--bar-vis,var(--hh,114px)) + 36px);-webkit-text-size-adjust:100%;text-size-adjust:100%}
 body{background:var(--bg);color:var(--ink);font-family:var(--ui);font-size:15px;line-height:1.55;margin:0}
 button,input,select{font:inherit;color:inherit}
 button{cursor:pointer}
 :focus-visible{outline:2px solid var(--accent);outline-offset:2px;border-radius:4px}
 
 /* top bar */
-.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--line)}
-.bar-in{max-width:1180px;margin:0 auto;padding:10px 16px 10px;display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--line);transition:transform .25s ease}
+.bar-in{max-width:1180px;margin:0 auto;padding:10px max(16px,env(safe-area-inset-right)) 10px max(16px,env(safe-area-inset-left));display:grid;grid-template-columns:minmax(0,1fr);gap:10px}
 .row1,.row2{min-width:0}
 .row1{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .brand{display:flex;flex-direction:column;min-width:0;flex:1 1 220px}
@@ -55,8 +55,8 @@ button{cursor:pointer}
 .jump{display:none;background:var(--surface);border:1px solid var(--line);border-radius:9px;padding:8px 10px;font-size:14px;width:100%;min-width:0;max-width:100%}
 
 /* layout */
-.wrap{max-width:1180px;margin:0 auto;padding-inline:16px;padding-block:20px 64px;display:grid;grid-template-columns:250px minmax(0,1fr);gap:32px}
-.toc{position:sticky;top:calc(var(--hh,114px) + 36px);align-self:start;max-height:calc(100vh - var(--hh,114px) - 56px);overflow:auto;padding-right:6px}
+.wrap{max-width:1180px;margin:0 auto;padding-inline:max(16px,env(safe-area-inset-left)) max(16px,env(safe-area-inset-right));padding-block:20px 64px;display:grid;grid-template-columns:250px minmax(0,1fr);gap:32px}
+.toc{position:sticky;top:calc(var(--bar-vis,var(--hh,114px)) + 36px);align-self:start;max-height:calc(100vh - var(--bar-vis,var(--hh,114px)) - 56px);overflow:auto;padding-right:6px;transition:top .25s ease,max-height .25s ease}
 .toc h2{font-size:11.5px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:0 0 8px;font-weight:600}
 .toc ol{list-style:none;margin:0;padding:0;display:grid;gap:1px}
 .toc a{display:flex;gap:8px;text-decoration:none;color:var(--muted);font-size:13.5px;padding:5px 8px;border-radius:6px;line-height:1.35}
@@ -130,7 +130,7 @@ details.voc[open] summary::before{transform:rotate(45deg)}
 .empty{background:var(--surface);border:1px dashed var(--line);border-radius:12px;padding:28px;text-align:center;color:var(--muted)}
 .foot{color:var(--muted);font-size:13px;margin-top:24px;max-width:66ch}
 .totop[hidden]{display:none}
-.totop{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:15;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 14px;font-size:13px;font-weight:600;box-shadow:var(--shadow)}
+.totop{position:fixed;right:max(16px,env(safe-area-inset-right));bottom:calc(16px + env(safe-area-inset-bottom,0px));z-index:15;border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 14px;font-size:13px;font-weight:600;box-shadow:var(--shadow)}
 
 @media (max-width:900px){
   .wrap{grid-template-columns:minmax(0,1fr);gap:0}
@@ -138,17 +138,17 @@ details.voc[open] summary::before{transform:rotate(45deg)}
   .jump{display:block;flex:1 1 200px;width:auto}
 }
 @media (max-width:560px){
-  .bar-in{padding:8px 12px;gap:8px}
+  .bar-in{padding:8px max(12px,env(safe-area-inset-right)) 8px max(12px,env(safe-area-inset-left));gap:8px}
   .brand{display:none}
   .search,.jump{flex:1 1 0;padding:7px 10px;font-size:13.5px}
   .chip .lg{display:none}
-  html{scroll-padding-top:calc(var(--hh,139px) + 20px)}
+  html{scroll-padding-top:calc(var(--bar-vis,var(--hh,139px)) + 20px)}
   .tabs{width:100%}
   .tabs button{flex:1;padding:7px 8px;font-size:13.5px}
   .tabs button small{display:none}
   .legend{width:100%;justify-content:space-between}
   .chip{padding:3px 8px 3px 6px;font-size:12px}
-  .wrap{padding-inline:12px}
+  .wrap{padding-inline:max(12px,env(safe-area-inset-left)) max(12px,env(safe-area-inset-right))}
   .thead,.qa,.p2,.sub{padding-left:14px;padding-right:14px}
   .cue{margin-left:14px;margin-right:14px}
   details.voc summary,.vgrid{padding-left:14px;padding-right:14px}
@@ -217,7 +217,7 @@ details.voc[open] summary::before{transform:rotate(45deg)}
 .prog-bar i{display:block;height:100%;width:0;background:var(--ok);transition:width .25s}
 .done-btn{margin-left:auto;display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surface);color:var(--muted);border-radius:999px;padding:4px 12px 4px 7px;font-size:12.5px;font-weight:600;white-space:nowrap}
 .done-btn::before{content:"";flex:none;width:15px;height:15px;box-sizing:border-box;border:1.5px solid currentColor;border-radius:50%}
-.done-btn:hover{color:var(--ink)}
+@media (hover:hover){.done-btn:hover{color:var(--ink)}}
 .done-btn[aria-pressed="true"]{background:var(--ok-soft);border-color:var(--ok);color:var(--ok)}
 .done-btn[aria-pressed="true"]::before{content:"✓";border:0;background:var(--ok);color:var(--surface);display:grid;place-items:center;font-size:10px;font-weight:800}
 .tfoot{padding:12px 20px;border-top:1px solid var(--line-soft);display:flex}
@@ -227,6 +227,20 @@ details.voc[open] summary::before{transform:rotate(45deg)}
 .toc a.done:not(.on){color:var(--faint)}
 .covers a .ck{margin-left:auto}
 @media (max-width:560px){.tfoot{padding-left:14px;padding-right:14px}}
+
+/* touch screens: 40px tap targets and 16px form text, so iOS doesn't zoom in on focus */
+@media (pointer:coarse){
+  .search,.jump{font-size:16px;min-height:40px}
+  .tabs button,.chip,.done-btn,.order button{min-height:40px}
+  .chip{font-size:13px}
+  .done-btn{padding:6px 14px 6px 10px;font-size:13.5px}
+  .done-btn::before{width:18px;height:18px}
+  .done-btn[aria-pressed="true"]::before{font-size:11px}
+  .covers a{padding-block:10px}
+  .totop{min-height:44px;padding:10px 16px}
+}
+/* while reading on a touch screen the header slides up, leaving only the progress row */
+body.bar-up .bar{transform:translateY(calc(-1 * var(--fold,0px)))}
 @media (prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
 </style>
 
@@ -381,7 +395,7 @@ function render(p){
   paintDone(); applySearch(); observe();
 }
 document.querySelectorAll(".tabs button").forEach(function(b){ b.addEventListener("click",function(){ if(b.dataset.part!==part){ render(b.dataset.part); window.scrollTo(0,0);} }); });
-jumpEl.addEventListener("change",function(){ var el=document.getElementById(this.value); if(el) el.scrollIntoView({behavior:"smooth"}); this.value=""; });
+jumpEl.addEventListener("change",function(){ var el=document.getElementById(this.value); this.blur(); if(el){ prepJump(); el.scrollIntoView({behavior:"smooth"}); } this.value=""; });
 
 /* search */
 var sEl=document.getElementById("search"), cEl=document.getElementById("count");
@@ -451,8 +465,8 @@ function showPop(m){
 }
 function hidePop(){ pop.hidden=true; popFor=null; }
 listEl.addEventListener("click",function(e){ var db=e.target.closest(".done-btn"); if(db){ toggleDone(db.closest(".topic")); return; }
-  var ob=e.target.closest(".order button"); if(ob){ if(ob.dataset.o!==ORDER){ ORDER=ob.dataset.o; store("order",ORDER); HTML.p23=null; render("p23"); document.getElementById("stories").scrollIntoView(); } return; }
-  var ts=e.target.closest("a.tag-s, .covers a"); if(ts){ var id=ts.getAttribute("href").slice(1); var el=document.getElementById(id); if(el){ e.preventDefault(); if(el.tagName==="DETAILS") el.open=true; el.scrollIntoView({behavior:"smooth"}); } return; }
+  var ob=e.target.closest(".order button"); if(ob){ if(ob.dataset.o!==ORDER){ ORDER=ob.dataset.o; store("order",ORDER); HTML.p23=null; render("p23"); prepJump(); document.getElementById("stories").scrollIntoView(); } return; }
+  var ts=e.target.closest("a.tag-s, .covers a"); if(ts){ var id=ts.getAttribute("href").slice(1); var el=document.getElementById(id); if(el){ e.preventDefault(); if(el.tagName==="DETAILS") el.open=true; prepJump(); el.scrollIntoView({behavior:"smooth"}); } return; }
   var m=e.target.closest("mark"); if(m){ e.stopPropagation(); if(popFor===m) hidePop(); else showPop(m);} });
 listEl.addEventListener("keydown",function(e){ var m=e.target.closest&&e.target.closest("mark"); if(m&&(e.key==="Enter"||e.key===" ")){ e.preventDefault(); showPop(m);} });
 document.addEventListener("click",function(e){ if(!pop.hidden && !pop.contains(e.target)) hidePop(); });
@@ -469,15 +483,41 @@ function observe(){
 }
 document.getElementById("totop").addEventListener("click",function(){ window.scrollTo({top:0,behavior:"smooth"}); });
 
-/* the sticky header grows when its controls wrap; scroll offsets follow its real height */
-var barEl=document.querySelector(".bar"), HH=0;
-function syncHH(){ var h=barEl.offsetHeight; if(h===HH) return; HH=h; document.documentElement.style.setProperty("--hh",h+"px"); observe(); }
+/* the sticky header grows when its controls wrap; scroll offsets follow its real height.
+   On touch screens it slides up by FOLD while scrolling down to read, leaving only the
+   progress row, and comes back on scrolling up. --bar-vis is the part still on screen. */
+var barEl=document.querySelector(".bar"), progEl=barEl.querySelector(".prog"), HH=0, FOLD=0;
+var AUTOHIDE=!!(window.matchMedia&&matchMedia("(pointer:coarse)").matches), lastY=0, jumpT=0;
+function setBarVis(){ document.documentElement.style.setProperty("--bar-vis",(document.body.classList.contains("bar-up")?HH-FOLD:HH)+"px"); }
+function syncHH(){ var h=barEl.offsetHeight; if(h===HH) return; HH=h; FOLD=progEl.offsetTop-6;
+  var s=document.documentElement.style; s.setProperty("--hh",h+"px"); s.setProperty("--fold",FOLD+"px"); setBarVis(); observe(); }
+function barUp(up){
+  if(!AUTOHIDE||document.body.classList.contains("bar-up")===up) return;
+  if(up&&(document.activeElement===sEl||document.activeElement===jumpEl)) return; // keep the search box or topic picker on screen while in use
+  document.body.classList.toggle("bar-up",up); setBarVis();
+}
+// a jump folds the header first so the topic lands right under the progress row,
+// and the jump's own scroll events don't unfold it again
+function prepJump(){ if(!AUTOHIDE) return; barUp(true); clearTimeout(jumpT); jumpT=setTimeout(endJump,300); }
+function endJump(){ jumpT=0; lastY=scrollY; if(scrollY<HH) barUp(false); }
+window.addEventListener("scroll",function(){
+  if(!AUTOHIDE) return;
+  var y=scrollY;
+  if(jumpT){ clearTimeout(jumpT); jumpT=setTimeout(endJump,200); return; }
+  if(y<HH) barUp(false);
+  else if(y-lastY>8) barUp(true);
+  else if(lastY-y>8) barUp(false);
+  else return;
+  lastY=y;
+},{passive:true});
+barEl.addEventListener("focusin",function(){ barUp(false); });
+tocEl.addEventListener("click",function(e){ if(e.target.closest("a")) prepJump(); });
 
 var start=(location.hash||"").replace("#","");
 render(start.indexOf("p23")===0 ? "p23" : (start.indexOf("p1")===0 ? "p1" : (load("part")||"p1")));
 syncHH();
 if("ResizeObserver" in window) new ResizeObserver(syncHH).observe(barEl); else window.addEventListener("resize",syncHH);
-if(start){ var el=document.getElementById(start); if(el) setTimeout(function(){ el.scrollIntoView(); },50); }
+if(start){ var el=document.getElementById(start); if(el) setTimeout(function(){ prepJump(); el.scrollIntoView(); },50); }
 </script>
 
 </body></html>
